@@ -18,8 +18,10 @@ package io.nodyn.runtime.nashorn;
 import io.nodyn.NodeProcess;
 import io.nodyn.Nodyn;
 import io.nodyn.runtime.Config;
-import io.nodyn.runtime.Program;
 import org.vertx.java.core.Vertx;
+
+import javax.script.CompiledScript;
+import javax.script.ScriptEngine;
 
 /**
  * @author Lance Ball
@@ -36,7 +38,7 @@ public class NashornRuntime extends Nodyn {
     }
 
     @Override
-    public Program compile(String source, String fileName, boolean displayErrors) throws Throwable {
+    public CompiledScript compile(String source, String fileName, boolean displayErrors) throws Throwable {
         return null;
     }
 
@@ -48,6 +50,11 @@ public class NashornRuntime extends Nodyn {
     @Override
     public boolean isContext(Object global) {
         return false;
+    }
+
+    @Override
+    public ScriptEngine getScriptEngine() {
+        return null;
     }
 
     @Override

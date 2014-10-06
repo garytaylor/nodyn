@@ -19,9 +19,6 @@ package io.nodyn.cli;
 import io.nodyn.Nodyn;
 import io.nodyn.runtime.Config;
 import io.nodyn.runtime.RuntimeFactory;
-import org.dynjs.exception.ThrowException;
-import org.dynjs.runtime.DynJS;
-import org.dynjs.runtime.JSObject;
 
 import java.io.IOException;
 

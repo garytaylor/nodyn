@@ -32,7 +32,8 @@ ContextifyScript.prototype.runInThisContext = function() {
 };
 
 ContextifyScript.prototype.runInContext = function(context) {
-  return this._script.execute( context );
+  print(">>>>>>>>>>>>>>>> GOING TO EVAL");
+  return this._script.eval( context );
 };
 
 function isContext(obj) {

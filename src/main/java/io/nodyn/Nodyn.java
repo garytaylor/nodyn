@@ -19,9 +19,12 @@ package io.nodyn;
 import io.netty.channel.EventLoopGroup;
 import io.nodyn.loop.EventLoop;
 import io.nodyn.runtime.Config;
-import io.nodyn.runtime.Program;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.impl.VertxInternal;
+
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptEngine;
 
 /**
  * @author Lance Ball
@@ -43,11 +46,26 @@ public abstract class Nodyn {
     // The following methods are used in contextify.js
     abstract public Object getGlobalContext();
 
-    abstract public Program compile(String source, String fileName, boolean displayErrors) throws Throwable;
-
     abstract public void makeContext(Object global);
 
     abstract public boolean isContext(Object global);
+
+    abstract public ScriptEngine getScriptEngine();
+
+    public CompiledScript compile(String source, String fileName, boolean displayErrors) throws Throwable {
+        try {
+            if (getScriptEngine() instanceof Compilable) {
+                return ((Compilable)getScriptEngine()).compile(source);
+            }
+        } catch (Throwable t) {
+            if ( displayErrors ) {
+                t.printStackTrace();
+            }
+            throw t;
+        }
+        return null;
+    }
+
 
 
     protected Nodyn(Config config, Vertx vertx, boolean controlLifeCycle) {

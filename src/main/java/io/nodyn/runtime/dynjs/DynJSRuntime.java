@@ -19,16 +19,18 @@ package io.nodyn.runtime.dynjs;
 
 import io.nodyn.NodeProcess;
 import io.nodyn.Nodyn;
-import io.nodyn.runtime.Program;
 import org.dynjs.Config;
 import org.dynjs.exception.ThrowException;
-import org.dynjs.runtime.*;
+import org.dynjs.jsr223.DynJSScriptEngine;
 import org.dynjs.runtime.Compiler;
+import org.dynjs.runtime.*;
 import org.dynjs.runtime.builtins.DynJSBuiltin;
 import org.dynjs.runtime.builtins.Require;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.VertxFactory;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,6 +40,7 @@ import java.util.List;
 public class DynJSRuntime extends Nodyn {
 
     private final DynJS runtime;
+    private final DynJSScriptEngine engine;
 
     public DynJSRuntime(DynJSConfig config) {
         this((config.isClustered() ? VertxFactory.newVertx(config.getHost()) : VertxFactory.newVertx()),
@@ -48,6 +51,8 @@ public class DynJSRuntime extends Nodyn {
     public DynJSRuntime(Vertx vertx, DynJSConfig config, boolean controlLifeCycle) {
         super(config, vertx, controlLifeCycle);
         this.runtime = new DynJS(config);
+        ScriptEngineManager manager = new ScriptEngineManager();
+        this.engine = (DynJSScriptEngine) manager.getEngineByName( "dynjs" );
     }
 
     @Override
@@ -55,18 +60,6 @@ public class DynJSRuntime extends Nodyn {
         Runner runner = runtime.newRunner();
         runner.withSource("__native_require('nodyn/bindings/" + name + "');");
         return runner.execute();
-    }
-
-    @Override
-    public Program compile(String source, String fileName, boolean displayErrors) throws Throwable {
-        try {
-            return new DynJSProgram(this, source, fileName);
-        } catch (Throwable t) {
-            if ( displayErrors ) {
-                t.printStackTrace();
-            }
-            throw t;
-        }
     }
 
     @Override
@@ -83,6 +76,11 @@ public class DynJSRuntime extends Nodyn {
             }
         }
         return false;
+    }
+
+    @Override
+    public ScriptEngine getScriptEngine() {
+        return this.engine;
     }
 
     @Override
